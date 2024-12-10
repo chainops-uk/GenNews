@@ -1,0 +1,776 @@
+import ollama
+from datetime import datetime
+import json
+import time
+import asyncio
+import aiohttp
+from .crypto_client import create_crypto_context
+import re
+import traceback
+from .eodhd_client import create_market_context
+
+def get_system_prompt():
+    """Get system prompt for question generation."""
+    return (
+        "You are a financial analyst. Generate diverse questions about different topics using this EXACT format:\n\n"
+        "For cryptocurrency questions:\n"
+        '{"question": "Will [coin] price exceed [X] by [date]?",\n'
+        ' "timeframe": "YYYY/MM/DD",\n'
+        ' "category": "cryptocurrency",\n'
+        ' "metric": "price_target",\n'
+        ' "target_value": [reasonable price based on current price],\n'
+        ' "measurement_source": "CoinMarketCap"}\n\n'
+        "For economic questions:\n"
+        '{"question": "Will [indicator] [change] to [X] by [date]?",\n'
+        ' "timeframe": "YYYY/MM/DD",\n'
+        ' "category": "economic_indicator",\n'
+        ' "metric": "unemployment_rate",\n'
+        ' "target_value": [reasonable value between 2.0 and 10.0],\n'
+        ' "measurement_source": "FRED database"}\n\n'
+        "For social questions:\n"
+        '{"question": "Will protest count in [country] exceed [X] by [date]?",\n'
+        ' "timeframe": "YYYY/MM/DD",\n'
+        ' "category": "social_events",\n'
+        ' "metric": "protest_count",\n'
+        ' "target_value": [value between 50 and 500],\n'
+        ' "measurement_source": "ACLED database"}\n\n'
+        "For market questions:\n"
+        '{"question": "Will [stock] price exceed [X] by [date]?",\n'
+        ' "timeframe": "YYYY/MM/DD",\n'
+        ' "category": "financial_market",\n'
+        ' "metric": "price_target",\n'
+        ' "target_value": [reasonable price based on current price],\n'
+        ' "measurement_source": "EOD Historical Data"}\n\n'
+        "IMPORTANT RULES:\n"
+        "1. Use ONLY these exact categories and sources\n"
+        "2. Generate diverse questions about different topics\n"
+        "3. Use dates between 2024/12/01 and 2025/06/30\n"
+        "4. Use reasonable target values based on current data\n"
+        "5. Do not repeat similar questions\n"
+        "6. Include relevant news context in questions"
+    )
+
+def create_prompt(num_questions, fred_context, acled_context, crypto_context, news_headlines, market_context=""):
+    """Create prompt for question generation."""
+    prompt = (
+        f"Generate {num_questions} questions in a SINGLE JSON array like this:\n\n"
+        "[\n"
+        "  {\n"
+        '    "question": "Will Bitcoin price exceed 100000 by 2025/03/31?",\n'
+        '    "timeframe": "2025/03/31",\n'
+        '    "category": "cryptocurrency",\n'
+        '    "metric": "price_target",\n'
+        '    "target_value": 100000,\n'
+        '    "measurement_source": "CoinMarketCap"\n'
+        "  },\n"
+        "  {\n"
+        '    "question": "Will unemployment rate drop below 4.5 by 2025/03/31?",\n'
+        '    "timeframe": "2025/03/31",\n'
+        '    "category": "economic_indicator",\n'
+        '    "metric": "unemployment_rate",\n'
+        '    "target_value": 4.5,\n'
+        '    "measurement_source": "FRED database"\n'
+        "  }\n"
+        "]\n\n"
+        "IMPORTANT: Put ALL questions in ONE array. Do not create multiple arrays.\n\n"
+        "USE THIS DATA:\n"
+        f"ECONOMIC DATA: {fred_context}\n"
+        f"SOCIAL DATA: {acled_context}\n"
+        f"CRYPTO DATA: {crypto_context}\n"
+        f"MARKET DATA: {market_context}\n"
+        "RECENT NEWS:\n"
+    )
+    headlines = news_headlines[:3]
+    prompt += '\n'.join(f"- {headline}" for headline in headlines)
+    return prompt
+
+def create_fred_context(fred_data):
+    """Create context string from FRED data."""
+    fred_context = "Current Economic Indicators:\n"
+    for indicator, data in fred_data.items():
+        if data['latest_value'] is not None:
+            fred_context += f"- {data['description']}: {data['latest_value']:.2f} {data['units']}"
+            if data['yoy_change'] is not None:
+                fred_context += f" (YoY change: {data['yoy_change']:.1f}%)"
+            fred_context += "\n"
+    return fred_context
+
+def create_acled_context(acled_data):
+    """Create context string from ACLED data."""
+    context = "Recent Social and Political Events:\n"
+    
+    if not isinstance(acled_data, dict):
+        print("Warning: Invalid ACLED data format")
+        return context
+    
+    # Add summary statistics
+    if 'summary' in acled_data and isinstance(acled_data['summary'], dict):
+        summary = acled_data['summary']
+        if 'total_events' in summary:
+            context += f"Total Events: {summary['total_events']}\n"
+        if 'total_fatalities' in summary:
+            context += f"Total Fatalities: {summary['total_fatalities']}\n"
+        
+        # Add event type breakdown
+        if 'event_types' in summary:
+            context += "\nEvent Types:\n"
+            for event_type, count in summary['event_types'].items():
+                context += f"- {event_type}: {count} events\n"
+    
+    # Add country information
+    if 'countries' in acled_data:
+        context += "\nMonitored Countries:\n"
+        for country in acled_data['countries']:
+            context += f"- {country}\n"
+    
+    return context
+
+def get_crypto_price_range(crypto_data, symbol):
+    """Get reasonable price range for cryptocurrency."""
+    if symbol not in crypto_data:
+        return 1, 200000  # Default range for unknown crypto
+    
+    current_price = float(crypto_data[symbol]['price'])
+    # Set reasonable price ranges based on current price
+    min_price = current_price * 0.5  # 50% below current
+    max_price = current_price * 2.0  # 200% above current
+    return min_price, max_price
+
+def get_category_prompt(category, context, crypto_data=None, countries=None):
+    """Get category-specific prompt."""
+    if category == 'cryptocurrency':
+        # Get list of available symbols and their current prices
+        crypto_ranges = []
+        for symbol, data in crypto_data.items():
+            min_price, max_price = get_crypto_price_range(crypto_data, symbol)
+            if data['price'] < 100:
+                crypto_ranges.append(
+                    f"For {data['name']} ({symbol}): price between {min_price:.2f} and {max_price:.2f}"
+                )
+            else:
+                crypto_ranges.append(
+                    f"For {data['name']} ({symbol}): price between {min_price:.0f} and {max_price:.0f}"
+                )
+        
+        return (
+            "Generate ONE cryptocurrency price prediction question.\n"
+            f"Crypto Data: {context}\n"
+            "Use EXACTLY this format and ONLY these cryptocurrencies and price ranges:\n"
+            f"{chr(10).join(crypto_ranges)}\n\n"
+            '{"question": "Will [coin] price exceed [price] by [date]?",\n'
+            ' "timeframe": "YYYY/MM/DD",\n'
+            ' "category": "cryptocurrency",\n'
+            ' "metric": "price_target",\n'
+            ' "target_value": [price within range for chosen coin],\n'
+            ' "measurement_source": "CoinMarketCap"}'
+        )
+    elif category == 'economic_indicator':
+        # Get current values from FRED data
+        return (
+            "Generate ONE unique economic indicator question.\n"
+            f"Economic Data: {context}\n"
+            "Use EXACTLY this format:\n"
+            '{"question": "Will [indicator] [increase/decrease] to [value] by [date]?",\n'
+            ' "timeframe": "YYYY/MM/DD",\n'
+            ' "category": "economic_indicator",\n'
+            ' "metric": "unemployment_rate",\n'  # We can expand this later
+            ' "target_value": [reasonable value based on current data],\n'
+            ' "measurement_source": "FRED database"}\n\n'
+            "Example: Will unemployment rate drop below 4.5 by 2025/03/31?"
+        )
+    elif category == 'social_events':
+        country_list = ", ".join(countries) if countries else "any country"
+        return (
+            "Generate ONE unique protest count question.\n"
+            f"Social Data: {context}\n"
+            f"Use ONLY these country codes: {country_list}\n"
+            "Use EXACTLY this format:\n"
+            '{"question": "Will protest count in [country_code] exceed [number] by [date]?",\n'
+            ' "timeframe": "2024/12/01",\n'  # Example date
+            ' "category": "social_events",\n'
+            ' "metric": "protest_count",\n'
+            ' "target_value": [number between 50 and 500],\n'
+            ' "measurement_source": "ACLED database"}\n\n'
+            f"Example: Will protest count in {countries[0]} exceed 100 by 2024/12/01?"
+        )
+    elif category == 'financial_market':
+        return (
+            "Generate ONE financial market question.\n"
+            f"Market Data: {context}\n"
+            "Use EXACTLY this format:\n"
+            '{"question": "Will [stock/index] [metric] [change] to X by YYYY/MM/DD?",\n'
+            ' "timeframe": "YYYY/MM/DD",\n'
+            ' "category": "financial_market",\n'
+            ' "metric": [price_target, volume_24h, or market_cap],\n'
+            ' "target_value": [reasonable value based on current data],\n'
+            ' "measurement_source": "EOD Historical Data"\n'
+            "}\n\n"
+            "Example: Will AAPL price exceed 200 by 2025/03/31?"
+        )
+
+def validate_target_value(category, value, crypto_data=None, question=None):
+    """Validate target value is within reasonable range."""
+    try:
+        value = float(value)
+        if category == 'cryptocurrency':
+            if not crypto_data or not question:
+                print("Missing crypto data or question for validation")
+                return False
+            
+            for symbol, data in crypto_data.items():
+                if symbol in question['question'] or data['name'] in question['question']:
+                    min_price = float(data['price']) * 0.5  # 50% below current
+                    max_price = float(data['price']) * 2.0  # 200% above current
+                    if min_price <= value <= max_price:
+                        return True
+                    else:
+                        print(f"Price {value} is outside reasonable range ({min_price:.2f} - {max_price:.2f}) for {symbol}")
+                        return False
+            print(f"No matching cryptocurrency found in question: {question['question']}")
+            return False
+        elif category == 'economic_indicator':
+            metric = question.get('metric', '')
+            if metric == 'gdp_growth_rate':
+                return -5 <= value <= 10  # GDP growth rate range
+            elif metric == 'inflation_rate':
+                return -2 <= value <= 15  # Inflation rate range
+            elif metric == 'unemployment_rate':
+                return 2 <= value <= 15  # Unemployment rate range
+            elif metric == 'interest_rate':
+                return 0 <= value <= 10  # Interest rate range
+            elif metric == 'treasury_rate':
+                return 0 <= value <= 10  # Treasury rate range
+            elif metric == 'cpi_change':
+                return -5 <= value <= 15  # CPI change range
+        elif category == 'social_events':
+            return 50 <= value <= 500  # Protest count range
+        elif category == 'financial_market':
+            metric = question.get('metric', '')
+            if metric == 'price_target':
+                return value > 0  # Price must be positive
+            elif metric == 'volume_24h':
+                return value >= 1000  # Reasonable volume
+            elif metric == 'market_cap':
+                return value >= 1000000  # Reasonable market cap
+        return False
+    except (ValueError, TypeError) as e:
+        print(f"Error validating target value: {str(e)}")
+        return False
+
+def validate_single_question(question, crypto_data=None, countries=None):
+    """Validate a single question."""
+    try:
+        # Check required fields
+        required_fields = ['question', 'timeframe', 'category', 'metric', 'measurement_source', 'target_value']
+        if not all(field in question for field in required_fields):
+            print(f"Missing required fields. Found: {list(question.keys())}")
+            return False
+        
+        # Set correct measurement source based on category
+        category = question['category']
+        if category == 'cryptocurrency':
+            question['measurement_source'] = 'CoinMarketCap'
+        elif category == 'economic_indicator':
+            question['measurement_source'] = 'FRED database'
+        elif category == 'social_events':
+            question['measurement_source'] = 'ACLED database'
+            # Validate countries
+            if not countries:
+                print("No valid countries provided for validation")
+                return False
+            valid_country = False
+            for country in countries:
+                if country in question['question'].upper():  # Convert to uppercase for comparison
+                    valid_country = True
+                    break
+            if not valid_country:
+                print(f"Question contains invalid country code: {question['question']}")
+                print(f"Must use one of these codes: {', '.join(countries)}")
+                return False
+        elif category == 'financial_market':
+            question['measurement_source'] = 'EOD Historical Data'
+        else:
+            print(f"Invalid category: {category}")
+            return False
+        
+        # Convert and validate target_value
+        try:
+            if isinstance(question['target_value'], list):
+                question['target_value'] = question['target_value'][0]
+            if isinstance(question['target_value'], str):
+                question['target_value'] = float(question['target_value'].replace('$', '').replace('%', '').strip())
+            
+            # Validate value ranges
+            if category == 'social_events' and not (50 <= float(question['target_value']) <= 500):
+                print(f"Invalid protest count: {question['target_value']}")
+                return False
+            elif category == 'economic_indicator' and question['metric'] == 'unemployment_rate':
+                if not (2.0 <= float(question['target_value']) <= 10.0):
+                    print(f"Invalid unemployment rate: {question['target_value']}")
+                    return False
+        except (ValueError, TypeError) as e:
+            print(f"Error validating target value: {e}")
+            return False
+        
+        # Validate timeframe
+        try:
+            timeframe = question['timeframe']
+            if timeframe == 'YYYY/MM/DD':
+                print("Invalid timeframe format: YYYY/MM/DD")
+                return False
+            
+            date = datetime.strptime(timeframe, '%Y/%m/%d')
+            if not (datetime(2024, 12, 1) <= date <= datetime(2025, 6, 30)):
+                print(f"Invalid timeframe (must be between 2024/12/01 and 2025/06/30): {timeframe}")
+                return False
+        except ValueError as e:
+            print(f"Invalid timeframe format: {timeframe}")
+            return False
+        
+        return True
+    except Exception as e:
+        print(f"Validation error: {str(e)}")
+        return False
+
+def generate_questions_batch_ollama(news_headlines, fred_data, acled_data, crypto_data, num_questions, required_categories=None, market_data=None):
+    """Generate a batch of questions using Ollama."""
+    fred_context = create_fred_context(fred_data)
+    acled_context = create_acled_context(acled_data)
+    crypto_context = create_crypto_context(crypto_data) if crypto_data else ""
+    market_context = create_market_context(market_data) if market_data else ""
+    
+    # Get allowed countries from ACLED data
+    allowed_countries = acled_data.get('countries', [])
+    if not allowed_countries:
+        print("Warning: No valid countries found in ACLED data")
+        if 'social_events' in required_categories:
+            required_categories.remove('social_events')
+            print("Removed social_events from required categories")
+    else:
+        print(f"Allowed countries: {', '.join(sorted(allowed_countries))}")
+    
+    # Track used values to avoid duplicates
+    used_values = {
+        'unemployment_rate': set(),
+        'protest_count': set(),
+        'crypto_prices': {},
+        'stock_prices': {}
+    }
+    
+    # Calculate target questions per category
+    categories = []
+    if 'economic_indicator' in required_categories:
+        categories.append('economic_indicator')
+    if 'social_events' in required_categories and allowed_countries:
+        categories.append('social_events')
+    if 'cryptocurrency' in required_categories and crypto_data:
+        categories.append('cryptocurrency')
+    if 'financial_market' in required_categories and market_data:
+        categories.append('financial_market')
+    
+    if not categories:
+        print("No valid categories specified")
+        return []
+    
+    # Calculate minimum and maximum questions per category
+    base_per_category = num_questions // len(categories)
+    extra_questions = num_questions % len(categories)
+    
+    category_targets = {}
+    for i, cat in enumerate(categories):
+        # Distribute extra questions evenly
+        category_targets[cat] = base_per_category + (1 if i < extra_questions else 0)
+        print(f"Target questions for {cat}: {category_targets[cat]}")
+    
+    # Track progress
+    used_questions = set()
+    all_questions = []
+    category_counts = {cat: 0 for cat in categories}
+    
+    current_category_index = 0
+    attempts = 0
+    max_attempts = 500  # Увеличиваем лимит попыток
+    
+    while len(all_questions) < num_questions and attempts < max_attempts:
+        current_category = categories[current_category_index]
+        
+        # Skip if we have enough questions for this category
+        if category_counts[current_category] >= category_targets[current_category]:
+            current_category_index = (current_category_index + 1) % len(categories)
+            continue
+        
+        try:
+            # Create category-specific prompt
+            category_prompt = get_category_prompt(
+                current_category,
+                fred_context if current_category == 'economic_indicator' else
+                acled_context if current_category == 'social_events' else
+                crypto_context if current_category == 'cryptocurrency' else
+                market_context,
+                crypto_data=crypto_data,
+                countries=allowed_countries
+            )
+            
+            response = ollama.chat(
+                model='llama3.2:3b',
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': get_system_prompt()
+                    },
+                    {
+                        'role': 'user',
+                        'content': category_prompt
+                    }
+                ]
+            )
+            
+            questions = process_ollama_response(response, crypto_data=crypto_data, countries=allowed_countries)
+            if questions:
+                for question in questions:
+                    if question['category'] == current_category:
+                        # Check for duplicates
+                        metric = question.get('metric')
+                        target_value = question.get('target_value')
+                        
+                        if isinstance(target_value, list):
+                            target_value = target_value[0]
+                        
+                        # Skip if similar value already used
+                        if metric == 'unemployment_rate':
+                            if target_value in used_values['unemployment_rate']:
+                                continue
+                            used_values['unemployment_rate'].add(target_value)
+                        elif metric == 'protest_count':
+                            if target_value in used_values['protest_count']:
+                                continue
+                            used_values['protest_count'].add(target_value)
+                        
+                        question_text = question['question']
+                        if question_text not in used_questions:
+                            used_questions.add(question_text)
+                            all_questions.append(question)
+                            category_counts[current_category] += 1
+                            print(f"Generated {current_category} question: {question_text}")
+                            
+                            # Print progress
+                            print("\nProgress:")
+                            for cat, count in category_counts.items():
+                                print(f"- {cat}: {count}/{category_targets[cat]}")
+                            print(f"Total: {len(all_questions)}/{num_questions}\n")
+                            break
+            
+            current_category_index = (current_category_index + 1) % len(categories)
+            
+        except Exception as e:
+            print(f"Error generating {current_category} question: {e}")
+            time.sleep(1)
+        
+        attempts += 1
+        if attempts >= max_attempts:
+            print(f"\nMax attempts ({max_attempts}) reached. Generated {len(all_questions)} questions.")
+            break
+        
+        time.sleep(0.5)
+    
+    return all_questions
+
+def clean_json_content(content):
+    """Clean and fix common JSON issues."""
+    try:
+        # Extract first valid JSON object if response is truncated
+        if '"measurement_source": "' in content:
+            content = content.split('"measurement_source": "')[0] + '"measurement_source": "EOD Historical Data"}'
+        
+        # Remove multiple arrays and merge into one
+        content = content.replace('] [', ',').replace('[]', '')
+        
+        # Find the start and end of the JSON array/object
+        start = content.find('{')
+        end = content.rfind('}') + 1
+        if start == -1 or end == 0:
+            return '[]'
+            
+        content = content[start:end]
+        
+        # Fix common issues
+        content = content.replace('\n', ' ')
+        content = content.replace('\\"', '"')
+        content = content.replace('\\\\', '\\')
+        content = content.replace('[X]', '0')  # Replace [X] placeholders
+        
+        # Remove extra spaces
+        content = re.sub(r'\s+', ' ', content)
+        
+        # Fix comma issues
+        content = re.sub(r',\s*]', ']', content)
+        content = re.sub(r',\s*}', '}', content)
+        content = re.sub(r'}\s*{', '},{', content)
+        
+        # Fix array values
+        content = re.sub(r'\[\s*(\d+\.?\d*)\s*\]', r'\1', content)
+        
+        # Wrap in array if it's a single object
+        if content.startswith('{'):
+            content = '[' + content + ']'
+        
+        return content
+    except Exception as e:
+        print(f"Error cleaning JSON: {str(e)}")
+        return '[]'
+
+def repair_json(content):
+    """Attempt to repair broken JSON."""
+    try:
+        # Basic cleanup
+        content = content.strip()
+        if not content:
+            return None
+        
+        # Extract all JSON objects
+        objects = []
+        current = ""
+        brace_count = 0
+        
+        for char in content:
+            if char == '{':
+                brace_count += 1
+            elif char == '}':
+                brace_count -= 1
+            
+            current += char
+            
+            if brace_count == 0 and current.strip():
+                if current.startswith('{') and current.endswith('}'):
+                    # Fix measurement source if truncated
+                    if '"measurement_source": "' in current and not current.endswith('"}'):
+                        if 'financial_market' in current:
+                            current = current.replace('"measurement_source": "', '"measurement_source": "EOD Historical Data"}')
+                        elif 'cryptocurrency' in current:
+                            current = current.replace('"measurement_source": "', '"measurement_source": "CoinMarketCap"}')
+                        elif 'social_events' in current:
+                            current = current.replace('"measurement_source": "', '"measurement_source": "ACLED database"}')
+                        elif 'economic_indicator' in current:
+                            current = current.replace('"measurement_source": "', '"measurement_source": "FRED database"}')
+                    
+                    try:
+                        # Verify it's valid JSON
+                        json.loads(current)
+                        objects.append(current)
+                    except:
+                        pass
+                current = ""
+        
+        if not objects:
+            return None
+        
+        # Combine into array
+        content = '[' + ','.join(objects) + ']'
+        
+        try:
+            return json.loads(content)
+        except:
+            # If still failing, try more aggressive cleanup
+            content = re.sub(r'[^\[\]{}",:.\d\w\s-]', '', content)
+            return json.loads(content)
+    except Exception as e:
+        print(f"Error repairing JSON: {str(e)}")
+        return None
+
+def process_ollama_response(response, crypto_data=None, countries=None):
+    """Process response from Ollama."""
+    try:
+        # Get content
+        if hasattr(response, 'message'):
+            content = response.message.content.strip()
+        elif isinstance(response, dict):
+            if 'message' in response:
+                if isinstance(response['message'], dict):
+                    content = response['message'].get('content', '').strip()
+                else:
+                    content = response['message'].content.strip()
+            else:
+                print(f"Unexpected response format: {response}")
+                return []
+        else:
+            print(f"Unexpected response type: {type(response)}")
+            return []
+        
+        print("Raw response:", content[:200])  # Debug output
+        
+        # Clean and fix JSON
+        content = clean_json_content(content)
+        print("Cleaned content:", content[:200])  # Debug output
+        
+        try:
+            questions = json.loads(content)
+            if not isinstance(questions, list):
+                questions = [questions]  # Convert single object to list
+        except json.JSONDecodeError as e:
+            print(f"JSON parsing error: {e}")
+            # Attempt to repair JSON
+            questions = repair_json(content)
+            if not questions:
+                print("Failed to repair JSON")
+                return []
+        
+        # Ensure questions is a list
+        if isinstance(questions, dict):
+            questions = [questions]
+        
+        # Pre-validate dates and metrics
+        for question in questions:
+            if 'timeframe' in question:
+                # Convert any date format to YYYY/MM/DD
+                try:
+                    date = datetime.strptime(question['timeframe'], '%Y/%m/%d')
+                    question['timeframe'] = date.strftime('%Y/%m/%d')
+                except ValueError:
+                    continue
+            
+            if 'metric' in question and question['metric'] == 'price':
+                question['metric'] = 'price_target'
+        
+        # Validate questions
+        validated_questions = []
+        for question in questions:
+            if validate_single_question(question, crypto_data=crypto_data, countries=countries):
+                validated_questions.append(question)
+        
+        return validated_questions
+    except Exception as e:
+        print(f"Error processing Ollama response: {str(e)}")
+        print(f"Full error details: {traceback.format_exc()}")
+        return []
+
+async def generate_questions_batch_ollama_async(news_headlines, fred_data, acled_data, crypto_data, num_questions, required_categories=None, market_data=None):
+    """Асинхронная генерация вопросов через Ollama."""
+    fred_context = create_fred_context(fred_data)
+    acled_context = create_acled_context(acled_data)
+    crypto_context = create_crypto_context(crypto_data) if crypto_data else ""
+    market_context = create_market_context(market_data) if market_data else ""
+    
+    # Добавляем информацию о требуемых категориях в промпт
+    if required_categories:
+        categories_str = ", ".join(required_categories)
+        extra_prompt = f"\nIMPORTANT: Generate questions ONLY for these categories: {categories_str}"
+    else:
+        extra_prompt = ""
+    
+    prompt = create_prompt(num_questions, fred_context, acled_context, crypto_context, news_headlines, market_context) + extra_prompt
+    
+    max_retries = 3
+    retry_delay = 5
+    timeout = aiohttp.ClientTimeout(total=60)
+    
+    for attempt in range(max_retries):
+        try:
+            response = ollama.chat(
+                model='llama3.2:3b',
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': get_system_prompt()
+                    },
+                    {
+                        'role': 'user',
+                        'content': prompt
+                    }
+                ]
+            )
+            
+            questions = process_ollama_response(response, crypto_data=crypto_data)
+            if questions:
+                return questions
+            
+            await asyncio.sleep(retry_delay)
+                    
+        except asyncio.TimeoutError:
+            print(f"Request timed out (attempt {attempt + 1}/{max_retries})")
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+        except Exception as e:
+            print(f"Error in async Ollama generation: {str(e)}")
+            print(f"Full error details: {type(e).__name__}")
+            if attempt < max_retries - 1:
+                await asyncio.sleep(retry_delay)
+    
+    return []
+
+async def check_ollama_server():
+    """роверка доступности Ollama сервера."""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get('http://localhost:11434/api/version') as response:
+                if response.status == 200:
+                    return True
+                return False
+    except:
+        return False
+
+async def generate_questions_ollama_parallel(news_headlines, fred_data, acled_data, crypto_data, num_questions, batch_size=5, required_categories=None, market_data=None):
+    """Параллельная генерация вопросов через Ollama."""
+    if not await check_ollama_server():
+        print("Error: Ollama server is not available")
+        return []
+    
+    if num_questions > 10:
+        batch_size = min(3, batch_size)
+    
+    tasks = []
+    for i in range(0, num_questions, batch_size):
+        current_batch_size = min(batch_size, num_questions - i)
+        task = asyncio.create_task(
+            generate_questions_batch_ollama_async(
+                news_headlines,
+                fred_data,
+                acled_data,
+                crypto_data,
+                current_batch_size,
+                required_categories=required_categories,
+                market_data=market_data
+            )
+        )
+        tasks.append(task)
+        await asyncio.sleep(0.5)
+    
+    try:
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        all_questions = []
+        for result in results:
+            if isinstance(result, Exception):
+                print(f"Task failed with error: {result}")
+                continue
+            if result:
+                all_questions.extend(result)
+        return all_questions
+    except Exception as e:
+        print(f"Error in parallel generation: {str(e)}")
+        return []
+
+def create_market_context(market_data):
+    """Create context string from market data."""
+    if not market_data:
+        return ""
+        
+    context = "Current Market Data:\n"
+    for symbol, data in market_data.items():
+        context += (
+            f"- {data['name']} ({symbol}):\n"
+            f"  Price: ${data['price']:.2f}\n"
+            f"  Volume: {data['volume']:,.0f}\n"
+            f"  Market Cap: ${data['market_cap']:,.2f}\n"
+            f"  24h Change: {data['change_percent']:.2f}%\n"
+        )
+    return context
+
+__all__ = [
+    'generate_questions_batch_ollama',
+    'generate_questions_ollama_parallel',
+    'generate_questions_batch_ollama_async',
+    'create_fred_context',
+    'create_acled_context',
+    'create_prompt',
+    'get_system_prompt',
+    'process_ollama_response'
+] 

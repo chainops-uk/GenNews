@@ -1,0 +1,402 @@
+[
+    {
+        "question": "Will protest count in CAN exceed 50 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 75,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in FRA exceed 200 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 220,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in PLN exceed 100 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 100,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 200 by 2025/05/20?",
+        "timeframe": "2025/05/20",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 205,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 50 by 2024/12/01?",
+        "timeframe": "2024/12/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 55,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in PLN exceed 50 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 70,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 100 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 120,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in FRA exceed 100 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 110,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in FRA exceed 80 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 80,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 200 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 220,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 100 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 110,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 75 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 75,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 120 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 120,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Cosmos (ATOM) price fall below $7.50 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 7.5,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price exceed $250000 by 2025/05/20?",
+        "timeframe": "2025/05/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 250000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Polkadot price exceed $10000 by 2025/06/01?",
+        "timeframe": "2025/06/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 10000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price exceed 70000 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 70000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price reach $75000 by 2025/05/20?",
+        "timeframe": "2025/05/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 75000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Polkadot price exceed $12.50 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 12250,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Polkadot price surpass 12.50 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 12.5,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price exceed 110000 by 2025/05/20?",
+        "timeframe": "2025/05/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 110000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price drop below $400 by 2025/05/01?",
+        "timeframe": "2025/05/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 399.99,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor (TAO) price exceed $7000 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 7000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price fall below $700 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 680,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Binance Coin (BNB) price exceed 35000 by 2025/05/20?",
+        "timeframe": "2025/05/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 32500,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor price drop below $300 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 250,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will MSFT price drop below $400 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 399,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price exceed 310 by 2025/05/20?",
+        "timeframe": "2025/05/20",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 310,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price exceed 250 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 240,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price exceed $400 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 400,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price drop below $320 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 315,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will MSFT price fall below $400 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 399.99,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price drop below $330 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 329.5,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price drop below $300 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 299,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price exceed $400 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 400,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price exceed $370 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 370,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price drop below $300 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 299,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will TSLA price exceed $400 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 400,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will protest count in CAN exceed 100 by 2025/04/10?",
+        "timeframe": "2025/04/10",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 110,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Cosmos (ATOM) price exceed $9.50 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 9500,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will TSLA price drop below $340 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 339,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will protest count in CAN exceed 75 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 75,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Cosmos (ATOM) price reach $11.00 by 2025/05/01?",
+        "timeframe": "2025/05/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 11000,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will TSLA price fall below $300 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 299,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will protest count in CAN exceed 120 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 120,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Cosmos (ATOM) price exceed $12.50 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 12750,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will TSLA price drop below $300 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 299,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will protest count in CAN exceed 120 by 2025/05/01?",
+        "timeframe": "2025/05/01",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 120,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Cosmos (ATOM) price exceed $12.00 by 2025/04/01?",
+        "timeframe": "2025/04/01",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 1200,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will MSFT price drop below $400 by 2025/04/20?",
+        "timeframe": "2025/04/20",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 399,
+        "measurement_source": "EOD Historical Data"
+    }
+]

@@ -1,0 +1,402 @@
+[
+    {
+        "question": "Will Treasury rate reach 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "treasury_rate",
+        "target_value": 0.05,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the unemployment rate exceed 4.5 by 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "economic_indicator",
+        "metric": "unemployment_rate",
+        "target_value": 5.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the Federal Funds Effective Rate drop below 4.0 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "Federal_Funds_Effective_Rate",
+        "target_value": 4.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the Gross Domestic Product increase by more than 50000 000000000s of Dollars by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "Gross_Domestic_Product",
+        "target_value": 50000.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the Industrial Production index drop below 100 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "Industrial_Production_index",
+        "target_value": 100.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the Consumer Price Index increase by more than 2 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "Consumer_Price_Index",
+        "target_value": 2.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the consumer price index for all urban consumers exceed 320 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "consumer_price_index",
+        "target_value": 320.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the 10-year treasury constant maturity minus 2-year treasury constant maturity increase to -30 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "10_year_treasury_constant_maturity_minus_2_year_treasury_constant_maturity",
+        "target_value": -30.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will Gross Domestic Product increase by 50 000000000 by 2025/04/15?",
+        "timeframe": "2025/03/31",
+        "category": "economic_indicator",
+        "metric": "gdp",
+        "target_value": 29404.32,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the US consumer price index rise by 3.1 in 2025, compared to 2024?",
+        "timeframe": "2025/04/01",
+        "category": "economic_indicator",
+        "metric": "consumer_price_index_growth_rate",
+        "target_value": 3.1,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the Consumer Price Index for All Urban Consumers exceed 320 by 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "economic_indicator",
+        "metric": "CPI-U",
+        "target_value": 320.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will Treasury rate reach 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "economic_indicator",
+        "metric": "treasury_rate",
+        "target_value": 0.5,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will the Industrial Production: Total Index drop below 100 by 2024/12/01?",
+        "timeframe": "2025/06/30",
+        "category": "economic_indicator",
+        "metric": "industrial_production",
+        "target_value": 100.0,
+        "measurement_source": "FRED database"
+    },
+    {
+        "question": "Will protest count in USA exceed 50 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 50.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in FRA exceed 50 by 2025/03/31?",
+        "timeframe": "2025/06/30",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 75.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 100 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 100.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in PLN exceed 75 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 75.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in ITA exceed 150 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 150.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will total events in the USA exceed 100 by 2025/03/31?",
+        "timeframe": "2025/06/30",
+        "category": "social_events",
+        "metric": "total_events",
+        "target_value": 100.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in USA exceed 200 by 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 200.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in FRA exceed 150 by 2025/04/15?",
+        "timeframe": "2025/04/15",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 150.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Total Events in USA exceed 66 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "Total Events",
+        "target_value": 66.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will total events in USA, FRA, CAN, PLN, ITA, SLA exceed 66 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "total_events",
+        "target_value": 66.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will total events in USA exceed 200 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "total_events",
+        "target_value": 200.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in CAN exceed 200 by 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 250.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will protest count in USA exceed 200 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "social_events",
+        "metric": "protest_count",
+        "target_value": 200.0,
+        "measurement_source": "ACLED database"
+    },
+    {
+        "question": "Will Bitcoin (BTC) exceed 150000 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 150000.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Cosmos (ATOM) drop below 8 by 2024/12/31?",
+        "timeframe": "2025/05/15",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 8.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will the price of Bitcoin (BTC) exceed 100000 by 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 100000.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Polkadot (DOT) drop below 7.00 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 6.99,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Litecoin (LTC) drop below 100.00 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 99.99,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Stellar (XLM) drop below 0.50 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 0.49,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Monero (XMR) drop below 150.00 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 149.99,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Ethereum (ETH) (ETH) price drop below 3500 by 2025/03/31?",
+        "timeframe": "2025/04/15",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 3500.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Bittensor (TAO) (TAO) price drop below 500 by 2025/03/31?",
+        "timeframe": "2025/04/15",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 500.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Neo (NEO) (NEO) price exceed 20 by 2025/04/15?",
+        "timeframe": "2025/04/15",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 20.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Litecoin (LTC) exceed 150 by 2025/04/15?",
+        "timeframe": "2025/05/15",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 150.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Monero (XMR) drop below 100 by 2024/12/31?",
+        "timeframe": "2025/05/15",
+        "category": "cryptocurrency",
+        "metric": "price_target",
+        "target_value": 100.0,
+        "measurement_source": "CoinMarketCap"
+    },
+    {
+        "question": "Will Apple (AAPL.US) (AAPL.US) price exceed 240 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 240.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Tesla's (TSLA.US) price change exceed 10 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_change_percentage",
+        "target_value": 10.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Microsoft (MSFT.US) (MSFT.US) price exceed 425 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 425.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will NVIDIA (AMD.US) price exceed 150 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 150.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Ford (F.US) price exceed 50 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 50.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Microsoft (MSFT.US) (MSFT.US) price exceed 600 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 600.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Apple (AAPL.US) exceed 250 by 2025/06/30?",
+        "timeframe": "2025/06/30",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 250.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Boeing (BA.US) price exceed 320 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 320.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Microsoft (MSFT.US) (MSFT.US) price change exceed 15 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_change_percentage",
+        "target_value": 15.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Apple (AAPL.US) (AAPL.US) price exceed 239 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 239.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will (AAPL.US) price drop below 235 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 235.0,
+        "measurement_source": "EOD Historical Data"
+    },
+    {
+        "question": "Will Apple (AAPL.US) (AAPL.US) stock price exceed 242.00 by 2025/03/31?",
+        "timeframe": "2025/03/31",
+        "category": "financial_market",
+        "metric": "price_target",
+        "target_value": 242.0,
+        "measurement_source": "EOD Historical Data"
+    }
+]

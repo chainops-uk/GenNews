@@ -1,0 +1,7 @@
+openai>=1.0.0
+newsapi-python
+fredapi
+pandas
+numpy
+tqdm
+ollama 
